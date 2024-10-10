@@ -7,7 +7,7 @@ public class ObjectPool : MonoBehaviour
 {
     [SerializeField] GameObject enemyPrefab;
     [SerializeField][Range(0.1f, 2f)] float spawnTimeDelay = 1f;
-    [SerializeField][Range(5, 10)] int poolSize = 5;
+    [SerializeField][Range(0, 10)] int poolSize = 5;
 
     private GameObject[] pool;
     // Start is called before the first frame update

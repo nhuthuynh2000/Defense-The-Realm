@@ -9,14 +9,16 @@ public class CoordinationSystem : MonoBehaviour
 {
     [SerializeField] Color32 defaultColor = Color.white;
     [SerializeField] Color32 blockedColor = Color.gray;
+    [SerializeField] Color32 exploredColor = Color.red;
+    [SerializeField] Color32 pathColor = Color.blue;
     TextMeshPro coordinationText;
     Vector2Int coordinates = new Vector2Int();
-    Waypoints waypoint;
+    GridManager gridManager;
     // Start is called before the first frame update
     void Awake()
     {
         coordinationText = GetComponentInChildren<TextMeshPro>();
-        waypoint = GetComponent<Waypoints>();
+        gridManager = FindAnyObjectByType<GridManager>();
         UpdateCoordinationText();
     }
 
@@ -42,9 +44,20 @@ public class CoordinationSystem : MonoBehaviour
 
     private void ColorCoordinates()
     {
-        if (!waypoint.IsPlaceable)
+        if (gridManager == null) { return; }
+        Node node = gridManager.GetNode(coordinates);
+        if (node == null) return;
+        if (!node.isWalkable)
         {
             coordinationText.color = blockedColor;
+        }
+        else if (node.isExplored)
+        {
+            coordinationText.color = exploredColor;
+        }
+        else if (node.isPath)
+        {
+            coordinationText.color = pathColor;
         }
         else
         {
@@ -54,8 +67,9 @@ public class CoordinationSystem : MonoBehaviour
 
     private void UpdateCoordinationText()
     {
-        coordinates.x = Mathf.RoundToInt(transform.position.x / UnityEditor.EditorSnapSettings.move.x);
-        coordinates.y = Mathf.RoundToInt(transform.position.z / UnityEditor.EditorSnapSettings.move.z);
+        if (gridManager == null) return;
+        coordinates.x = Mathf.RoundToInt(transform.position.x / gridManager.UnityGridSize);
+        coordinates.y = Mathf.RoundToInt(transform.position.z / gridManager.UnityGridSize);
         coordinationText.text = $"{coordinates.x},{coordinates.y}";
     }
     private void UpdateObjectName()
